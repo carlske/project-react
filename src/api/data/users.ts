@@ -1,4 +1,6 @@
-export const createUser = (user) => {
+import type { UserInterface } from "@/types/api";
+
+export const createUser = (user: UserInterface): UserInterface => {
   const { avatarUrl, bio, email, firstName, id, initials, lastName, password } =
     user;
 
@@ -16,7 +18,7 @@ export const createUser = (user) => {
   };
 };
 
-export const users = [
+export const users: UserInterface[] = [
   createUser({
     id: 1,
     avatarUrl: "https://i.pravatar.cc/150?img=1",

@@ -1,11 +1,12 @@
-import { Button } from "./components/ui";
+import { Button, Calendar } from "./components/ui";
+import { DarkModeToggle } from "./components/DarkModeToggle";
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
     <>
-      <div>
-        <p>Building something awesome with Vite and React!</p>
-        <Button variant="secondary">Click Me</Button>
+      <div className="p-8">
+        <HomePage />
       </div>
     </>
   );

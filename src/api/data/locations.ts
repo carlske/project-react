@@ -1,4 +1,6 @@
-export const createLocation = (location) => {
+import type { LocationInterface } from "@/types/api";
+
+export const createLocation = (location: LocationInterface): LocationInterface => {
   const { id, name, country } = location;
 
   return {
@@ -10,15 +12,15 @@ export const createLocation = (location) => {
   };
 };
 
-export const locations = [
+export const locations: LocationInterface[] = [
   createLocation({
     id: 1,
-    name: 'London',
-    country: 'United Kingdom',
+    name: "London",
+    country: "United Kingdom",
   }),
   createLocation({
     id: 2,
-    name: 'Paris',
-    country: 'France',
+    name: "Paris",
+    country: "France",
   }),
 ];

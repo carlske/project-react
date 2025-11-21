@@ -1,6 +1,9 @@
+import type { ReviewInterface } from '@/types/api';
 import { subDays } from 'date-fns';
 
-export const createReview = (review) => {
+
+
+export const createReview = (review: ReviewInterface): ReviewInterface => {
   const { id, userId, listingId, rating, comment, createdAt } = review;
 
   return {
@@ -14,9 +17,9 @@ export const createReview = (review) => {
   };
 };
 
-const today = new Date();
+const today: Date = new Date();
 
-export const reviews = [
+export const reviews: ReviewInterface[] = [
   createReview({
     id: 1,
     userId: 1,

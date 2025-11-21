@@ -1,15 +1,16 @@
+import type { ListingInterface } from '@/types/api';
 import { isListingAvailable } from './data/listings';
 import { getDatabaseTable, setDatabaseTable } from './helpers';
 
 // Gets listing by id
-export const getListingById = (id) => {
+export const getListingById = (id: number): ListingInterface | undefined => {
   const listings = getDatabaseTable('listings');
   if (!listings) {
     console.log('No listings table found');
     return;
   }
 
-  return listings.find((listing) => listing.id === id);
+  return listings.find((listing: ListingInterface) => listing.id === id);
 };
 
 // Gets listings using optional date range and search parameters
@@ -28,7 +29,7 @@ export const getListings = (params = {}) => {
 
   // Handles date range
   if (dates) {
-    filteredListings = filteredListings.filter((listing) =>
+    filteredListings = filteredListings.filter((listing: ListingInterface) =>
       isListingAvailable(listing, dates),
     );
   }
@@ -36,13 +37,13 @@ export const getListings = (params = {}) => {
   // Handles guests
   if (guests) {
     filteredListings = filteredListings.filter(
-      (listing) => guests <= listing.maxGuests,
+      (listing: ListingInterface) => guests <= listing.maxGuests,
     );
   }
 
   // Handles search
   if (search) {
-    filteredListings = filteredListings.filter((listing) =>
+    filteredListings = filteredListings.filter((listing: ListingInterface) =>
       listing.name.toLowerCase().includes(search.toLowerCase()),
     );
   }
@@ -51,7 +52,7 @@ export const getListings = (params = {}) => {
 };
 
 // Creates a listing
-export const createListing = (data) => {
+export const createListing = (data: ListingInterface) => {
   const listings = getDatabaseTable('listings');
   if (!listings) {
     console.log('No listings table found');

@@ -1,22 +1,9 @@
+import type { ListingInterface } from "@/types/api";
 import { addDays, startOfDay } from "date-fns";
 
 const startOfToday = startOfDay(new Date());
 
-interface ListingInterface {
-  availability: { from: Date; to: Date };
-  description: string;
-  guestFavorite?: boolean;
-  id: number;
-  maxGuests: number;
-  name: string;
-  locationId: number;
-  images: string[];
-  price: number;
-  rating: number;
-  userId: number;
-}
-
-export const createListing = (listing: ListingInterface) => {
+export const createListing = (listing: ListingInterface): ListingInterface => {
   const {
     availability,
     description,
@@ -48,7 +35,15 @@ export const createListing = (listing: ListingInterface) => {
   };
 };
 
-export const isListingAvailable = (listing, dates) => {
+interface AvailabilityDates {
+  from?: Date;
+  to?: Date;
+}
+
+export const isListingAvailable = (
+  listing: ListingInterface,
+  dates: AvailabilityDates
+) => {
   const { availability } = listing;
   const availableFrom = new Date(availability.from);
   const availableTo = new Date(availability.to);

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Cookies from 'js-cookie';
+import type { AxiosRequestConfig } from 'axios';
 
 import { env } from '@/lib/env';
 
@@ -26,8 +27,9 @@ const adapter = new MockAdapter(api, { delayResponse: 1000 });
 
 // Gets a single listing
 adapter.onGet(/\/api\/listings\/\d+/).reply(
-  withAuth(async (config) => {
-    const id = parseInt(config.url.match(/\/api\/listings\/(\d+)/)[1]);
+  withAuth(async (config: AxiosRequestConfig) => {
+    const match = config.url?.match(/\/api\/listings\/(\d+)/);
+    const id = match ? parseInt(match[1]) : 0;
 
     // Gets listing by id
     const listing = getListingById(id);
@@ -46,7 +48,7 @@ adapter.onGet(/\/api\/listings\/\d+/).reply(
 
 // Gets all listings
 adapter.onGet('/api/listings').reply(
-  withAuth(async (config) => {
+  withAuth(async (config: AxiosRequestConfig) => {
     const { params } = config;
 
     // Gets all listings with optional filters
@@ -64,7 +66,7 @@ adapter.onGet('/api/listings').reply(
 
 // Creates a listing
 adapter.onPost('/api/listings').reply(
-  withAuth(async (config) => {
+  withAuth(async (config: AxiosRequestConfig) => {
     const { data } = config;
 
     const listing = createListing(JSON.parse(data));
@@ -75,7 +77,7 @@ adapter.onPost('/api/listings').reply(
 
 // Gets reviews for a listing
 adapter.onGet('/api/reviews').reply(
-  withAuth(async (config) => {
+  withAuth(async (config: AxiosRequestConfig) => {
     const { params } = config;
 
     const reviews = getReviewsByListingId(params.listingId);
@@ -86,8 +88,12 @@ adapter.onGet('/api/reviews').reply(
 
 // Gets the current user
 adapter.onGet('/api/me').reply(
-  withAuth(async (config) => {
-    const accessToken = config.headers.Authorization?.split(' ')[1];
+  withAuth(async (config: AxiosRequestConfig) => {
+    const accessToken = config.headers?.Authorization?.split(' ')[1];
+
+    if (!accessToken) {
+      return [403, { message: 'Unauthorized' }];
+    }
 
     // Verifies access token and returns payload
     const accessTokenPayload = await verifyToken(accessToken, {
@@ -99,7 +105,12 @@ adapter.onGet('/api/me').reply(
     }
 
     // Verifies refresh token and returns payload
-    const refreshTokenPayload = await verifyToken(accessTokenPayload.data, {
+    // accessTokenPayload is JWTPayload, we need to access data property if it exists
+    // but jose JWTPayload doesn't have data by default.
+    // We signed it with { data } so it should be there.
+    const data = accessTokenPayload.data as string;
+
+    const refreshTokenPayload = await verifyToken(data, {
       returnPayload: true,
     });
 
@@ -107,7 +118,12 @@ adapter.onGet('/api/me').reply(
       return [403, { message: 'Unauthorized' }];
     }
 
-    const user = getUserById(refreshTokenPayload.data);
+    const userId = refreshTokenPayload.data as number;
+    const user = getUserById(userId);
+
+    if (!user) {
+      return [404, { message: 'User not found' }];
+    }
 
     // Returns access token and user
     return [
@@ -121,7 +137,7 @@ adapter.onGet('/api/me').reply(
 );
 
 // Signs the user in
-adapter.onPost('/api/signin').reply(async (config) => {
+adapter.onPost('/api/signin').reply(async (config: AxiosRequestConfig) => {
   const { data } = config;
   const user = getUser(JSON.parse(data));
 
@@ -164,7 +180,13 @@ adapter.onGet('/api/refreshToken').reply(async () => {
   }
 
   // Gets user by id
-  const user = getUserById(refreshTokenPayload.data);
+  const payload = refreshTokenPayload as import('jose').JWTPayload;
+  const userId = payload.data as number;
+  const user = getUserById(userId);
+
+  if (!user) {
+    return [403, { message: 'User not found' }];
+  }
 
   // Generates a new access token based on refresh token
   const accessToken = await generateAccessToken(refreshToken);

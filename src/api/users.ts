@@ -2,7 +2,7 @@ import type { UserInterface } from '@/types/api';
 import { getDatabaseTable } from './helpers';
 
 export const getUserById = (id: number): UserInterface | undefined => {
-  const users = getDatabaseTable('users');
+  const users = getDatabaseTable<UserInterface>('users');
   if (!users) {
     console.log('No users table found');
     return;
@@ -14,7 +14,7 @@ export const getUserById = (id: number): UserInterface | undefined => {
 export const getUser = (data: UserInterface): UserInterface | undefined => {
   const { email, password } = data;
 
-  const users = getDatabaseTable('users');
+  const users = getDatabaseTable<UserInterface>('users');
   if (!users) {
     console.log('No users table found');
     return;

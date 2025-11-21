@@ -4,7 +4,7 @@ import { getDatabaseTable, setDatabaseTable } from './helpers';
 
 // Gets listing by id
 export const getListingById = (id: number): ListingInterface | undefined => {
-  const listings = getDatabaseTable('listings');
+  const listings = getDatabaseTable<ListingInterface>('listings');
   if (!listings) {
     console.log('No listings table found');
     return;
@@ -14,14 +14,20 @@ export const getListingById = (id: number): ListingInterface | undefined => {
 };
 
 // Gets listings using optional date range and search parameters
-export const getListings = (params = {}) => {
+export const getListings = (
+  params: {
+    dates?: { from: Date; to: Date };
+    guests?: number;
+    search?: string;
+  } = {},
+) => {
   const { dates, guests, search } = params;
 
   // Gets the listings table
-  const listings = getDatabaseTable('listings');
+  const listings = getDatabaseTable<ListingInterface>('listings');
   if (!listings) {
     console.log('No listings table found');
-    return;
+    return [];
   }
 
   // Sets a new variable for the filtered listings
@@ -53,7 +59,7 @@ export const getListings = (params = {}) => {
 
 // Creates a listing
 export const createListing = (data: ListingInterface) => {
-  const listings = getDatabaseTable('listings');
+  const listings = getDatabaseTable<ListingInterface>('listings');
   if (!listings) {
     console.log('No listings table found');
     return;

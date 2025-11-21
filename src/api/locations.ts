@@ -2,7 +2,7 @@ import type { LocationInterface } from '@/types/api';
 import { getDatabaseTable } from './helpers';
 
 export const getLocationById = (id: number): LocationInterface | undefined => {
-  const locations = getDatabaseTable('locations');
+  const locations = getDatabaseTable<LocationInterface>('locations');
   if (!locations) {
     console.log('No locations table found');
     return;

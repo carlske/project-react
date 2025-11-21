@@ -10,6 +10,8 @@ export interface ListingInterface {
   price: number;
   rating: number;
   userId: number;
+  createdAt?: Date;
+  modifiedAt?: Date;
 }
 
 export interface LocationInterface {

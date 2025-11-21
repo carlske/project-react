@@ -64,7 +64,12 @@ export const isListingAvailable = (
     return checkOut <= availableTo && checkOut >= availableFrom;
   }
 
-  return availableFrom <= checkIn && availableTo >= checkOut;
+  // Handles both check-in and check-out
+  if (checkIn && checkOut) {
+    return availableFrom <= checkIn && availableTo >= checkOut;
+  }
+
+  return false;
 };
 
 export const listings = [
